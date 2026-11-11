@@ -7,6 +7,8 @@ from app.utils.llm_tools import TRANSACTION_TOOLS
 
 from app.utils.llm_tool_executor import execute_tool_call
 
+MAX_TOOL_ROUNDS = 3  # This is for defining the max number of times the model can call the tools before producing final result
+
 settings = get_settings()
 
 api_key = settings.openrouter_api_key
@@ -43,62 +45,57 @@ def generate_response(message: str, customer_id: str) -> str:
         },
     ]
 
-    payload = {
-        "model": model,
-        "messages": messages,
-        "temperature": 0.3,
-        "tools": TRANSACTION_TOOLS,
-        "tools_choice": "auto",
-    }
+    for round_number in range(MAX_TOOL_ROUNDS + 1):
 
-    response = requests.post(
-        url=openrouter_url,
-        headers=headers,
-        json=payload,
-        timeout=30.0,
-    )
+        payload = {
+            "model": model,
+            "messages": messages,
+            "temperature": 0.3,
+            "tools": TRANSACTION_TOOLS,
+            "tools_choice": "auto",
+        }
 
-    response.raise_for_status()
-
-    result = response.json()
-
-    assistant_message = result["choices"][0]["message"]
-
-    tool_calls = assistant_message.get("tool_calls")
-
-    # No tool requested: return the normal response.
-    if not tool_calls:
-        return assistant_message.get("content") or ""
-
-    # Add the assistant's original tool request to the conversation.
-    messages.append(assistant_message)
-
-    # Execute each requested tool.
-    for tool_call in tool_calls:
-        tool_result = execute_tool_call(
-            tool_call=tool_call,
-            customer_id=customer_id,
+        response = requests.post(
+            url=openrouter_url,
+            headers=headers,
+            json=payload,
+            timeout=30.0,
         )
 
-        messages.append(
-            {
-                "role": "tool",
-                "tool_call_id": tool_call["id"],
-                "content": json.dumps(tool_result),
-            }
-        )
+        response.raise_for_status()
 
-    # Second request: ask the model to interpret the tool results.
-    final_payload = {
-        "model": model,
-        "messages": messages,
-        "temperature": 0.3,
-    }
+        result = response.json()
 
-    final_response = requests.post(
-        openrouter_url, headers=headers, json=final_payload, timeout=30.0
-    )
-    final_response.raise_for_status()
-    final_result = final_response.json()
+        assistant_message = result["choices"][0]["message"]
 
-    return final_result["choices"][0]["message"]["content"] or ""
+        tool_calls = assistant_message.get("tool_calls")
+
+        # No tool requested: return the normal response.
+        if not tool_calls:
+            return assistant_message.get("content") or ""
+
+        # Prevent additional tool execution after the limit.
+        if round_number == MAX_TOOL_ROUNDS:
+            return (
+                "I couldn't complete your request. "
+                "Please try again or contact support."
+            )
+
+        # Add the assistant's original tool request to the conversation.
+        messages.append(assistant_message)
+
+        # Execute each requested tool.
+        for tool_call in tool_calls:
+            tool_result = execute_tool_call(
+                tool_call=tool_call,
+                customer_id=customer_id,
+            )
+
+            messages.append(
+                {
+                    "role": "tool",
+                    "tool_call_id": tool_call["id"],
+                    "content": json.dumps(tool_result),
+                }
+            )
+    return "Unable to complete your request"

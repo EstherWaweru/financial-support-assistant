@@ -2,7 +2,7 @@ import requests
 
 from app.core.config import get_settings
 
-from app.services.llm_tools import TRANSACTION_TOOLS
+from app.utils.llm_tools import TRANSACTION_TOOLS
 
 settings = get_settings()
 
