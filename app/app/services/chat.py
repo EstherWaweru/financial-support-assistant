@@ -1,6 +1,11 @@
+import json
+
 import requests
 
 from app.core.config import get_settings
+from app.utils.llm_tools import TRANSACTION_TOOLS
+
+from app.utils.llm_tool_executor import execute_tool_call
 
 settings = get_settings()
 
@@ -10,7 +15,7 @@ model = settings.openrouter_model
 openrouter_url = settings.openrouter_url
 
 
-def generate_response(message: str) -> str:
+def generate_response(message: str, customer_id: str) -> str:
     if not api_key or not model:
         raise ValueError("OpenRouter configuration is missing")
 
@@ -18,26 +23,32 @@ def generate_response(message: str) -> str:
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
+    messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a professional financial "
+                "customer support assistant. "
+                "Use available tools when transaction-specific "
+                "information is required. "
+                "Only report transaction details returned by tools. "
+                "Provide clear and concise responses. "
+                "Never invent transaction information."
+                "Limit response to 50 words."
+            ),
+        },
+        {
+            "role": "user",
+            "content": message,
+        },
+    ]
 
     payload = {
         "model": model,
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "You are a professional financial "
-                    "customer support assistant. "
-                    "Provide clear and concise responses. "
-                    "Never invent transaction information."
-                    "Limit response to 50 words."
-                ),
-            },
-            {
-                "role": "user",
-                "content": message,
-            },
-        ],
+        "messages": messages,
         "temperature": 0.3,
+        "tools": TRANSACTION_TOOLS,
+        "tools_choice": "auto",
     }
 
     response = requests.post(
@@ -51,4 +62,43 @@ def generate_response(message: str) -> str:
 
     result = response.json()
 
-    return result["choices"][0]["message"]["content"]
+    assistant_message = result["choices"][0]["message"]
+
+    tool_calls = assistant_message.get("tool_calls")
+
+    # No tool requested: return the normal response.
+    if not tool_calls:
+        return assistant_message.get("content") or ""
+
+    # Add the assistant's original tool request to the conversation.
+    messages.append(assistant_message)
+
+    # Execute each requested tool.
+    for tool_call in tool_calls:
+        tool_result = execute_tool_call(
+            tool_call=tool_call,
+            customer_id=customer_id,
+        )
+
+        messages.append(
+            {
+                "role": "tool",
+                "tool_call_id": tool_call["id"],
+                "content": json.dumps(tool_result),
+            }
+        )
+
+    # Second request: ask the model to interpret the tool results.
+    final_payload = {
+        "model": model,
+        "messages": messages,
+        "temperature": 0.3,
+    }
+
+    final_response = requests.post(
+        openrouter_url, headers=headers, json=final_payload, timeout=30.0
+    )
+    final_response.raise_for_status()
+    final_result = final_response.json()
+
+    return final_result["choices"][0]["message"]["content"] or ""

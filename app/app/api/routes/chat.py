@@ -11,5 +11,8 @@ router = APIRouter()
 def chat(
     chat_in: schemas.ChatRequest,
 ) -> Any:
-    answer = services.generate_response(chat_in.message)
+    # TODO: Get the customer id by auth
+    answer = services.generate_response(
+        message=chat_in.message, customer_id="customer_001"
+    )
     return schemas.ChatResponse(response=answer)
