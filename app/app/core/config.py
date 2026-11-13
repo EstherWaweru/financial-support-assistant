@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     openrouter_model: str
     api_version: str = "/v1"
     openrouter_url: str
+    postgres_password: str
+    database_url: str
 
     model_config = SettingsConfigDict(env_file=".env")
 

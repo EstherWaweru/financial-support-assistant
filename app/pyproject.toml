@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["estherwaweru <estherwaweru86@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.34.2"
+fastapi = {extras = ["standard"], version = "^0.162.5"}
+pydantic-settings = "^2.16.2"
+sqlalchemy = "^2.1.8"
+psycopg = {extras = ["binary", "pool"], version = "^3.3.9"}
+alembic = "^1.20.1"
+black = "^26.10.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
