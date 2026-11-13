@@ -1,6 +1,7 @@
 from typing import Any
 
 from fastapi import FastAPI, Request
+
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import Response
 from fastapi.responses import JSONResponse
