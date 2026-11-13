@@ -5,7 +5,7 @@ ENV PYTHONBUFFERED 1
 
 WORKDIR /app
 
-# Install Poetry and netcat for the test setup
+# Install Poetry
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
     cd /usr/local/bin && \
     ln -s /opt/poetry/bin/poetry && \
@@ -23,8 +23,5 @@ RUN bash -c "if [ ${INSTALL_DEV} == 'true' ] ; then poetry install --no-root ; e
 
 ENV PYTHONPATH=/app
 ENV C_FORCE_ROOT=1
-
-#RUN chmod +x worker-start.sh
-#RUN chmod +x scripts/check_worker_status.py
 
 ENTRYPOINT ["bash", "-c", "uvicorn main:application --host 0.0.0.0"]
