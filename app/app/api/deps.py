@@ -1,4 +1,6 @@
+import enum
 from collections.abc import Generator
+from types import SimpleNamespace
 
 from sqlalchemy.orm import Session
 
@@ -14,3 +16,13 @@ def get_db() -> Generator:
         raise e
     finally:
         db.close()
+
+
+class OrderDirection(enum.Enum):
+    DESC = "desc"
+    ASC = "asc"
+
+
+class Order(SimpleNamespace):
+    attribute: str
+    order_direction: OrderDirection
