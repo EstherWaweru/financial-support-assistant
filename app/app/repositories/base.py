@@ -1,7 +1,7 @@
 from sqlalchemy.sql.elements import or_, and_
 from datetime import timezone
-from app.api.deps import OrderDirection, Pagination, Order
-from app.crud.filter import Filter
+from app.api.deps import OrderDirection, Order
+from app.repositories.filter import Filter
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, Tuple
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
@@ -15,7 +15,7 @@ CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
-class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
+class CRUDBase(Generic[ModelType, CreateSchemaType]):
     def __init__(self, model: Type[ModelType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
@@ -77,7 +77,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if db_obj:
             return db_obj, False
         else:
-            db_obj = self.create(db=db, obj_in=obj_in, creator=creator)
+            db_obj = self.create(db=db, obj_in=obj_in)
             return db_obj, True
 
     def create(self, db: Session, *, obj_in: CreateSchemaType) -> ModelType:
