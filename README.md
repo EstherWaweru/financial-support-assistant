@@ -1,18 +1,18 @@
-# AI-Powered Financial Support Assistant
+# AI Powered Financial Support Assistant
 
-An AI-powered financial customer support application built with Python, FastAPI, PostgreSQL, and OpenRouter.
+An AI powered financial customer support application built with Python, FastAPI, PostgreSQL, and OpenRouter.
 
 The application helps customers resolve payment related queries through a conversational interface. It uses an LLM to understand customer questions and backend tools to retrieve accurate, transaction specific information.
 
 ## Features
 
-- **AI-powered conversations:** Uses OpenRouter to generate natural-language responses.
+- **AI powered conversations:** Uses OpenRouter to generate natural language responses.
 - **Tool calling:** Allows the LLM to request approved backend functions.
 - **Transaction lookups:** Retrieves transaction information from the backend.
 - **Conversation management:** Creates conversations, stores messages, and retrieves conversation history.
-- **Context retention:** Maintains conversation history to support follow-up questions.
+- **Context retention:** Maintains conversation history to support follow up questions.
 - **Customer data isolation:** Ensures customers can only access their own conversations and transactions.
-- **Internal tool execution:** Persists tool calls and results without exposing them in customer-facing conversation history.
+- **Internal tool execution:** Persists tool calls and results without exposing them in customer facing conversation history.
 - **JWT authentication:** Planned implementation for securing customer access.
 
 ## Technology Stack
@@ -154,7 +154,7 @@ Content-Type: application/json
 }
 ```
 
-### Example: Send a follow-up message
+### Example: Send a follow up message
 
 **Request**
 
@@ -169,21 +169,21 @@ Content-Type: application/json
 }
 ```
 
-The assistant uses the existing conversation history to understand the follow-up question.
+The assistant uses the existing conversation history to understand the follow up question.
 
 ## Security Considerations
 
 The application is being developed with the following security principles:
 
-- Backend-controlled access to financial data.
-- Customer-level authorization for transactions and conversations.
-- Validation of LLM-generated tool arguments.
-- Allowlisted tool execution rather than dynamic function execution.
-- Separation between internal tool messages and customer-visible responses.
+- Backend controlled access to financial data.
+- Customer level authorization for transactions and conversations.
+- Validation of LLM generated tool arguments.
+- Allow listed tool execution rather than dynamic function execution.
+- Separation between internal tool messages and customer visible responses.
 - Secure password hashing and JWT authentication (in progress).
 - Sensitive credentials stored in environment variables.
 
-Customer identity must be obtained from authenticated backend context, never trusted from an LLM-generated tool argument or an arbitrary client-supplied customer ID.
+Customer identity must be obtained from authenticated backend context, never trusted from an LLM generated tool argument or an arbitrary client supplied customer ID.
 
 ## Development Roadmap
 
@@ -198,12 +198,12 @@ Customer identity must be obtained from authenticated backend context, never tru
 - [x] Conversation creation and retrieval
 - [x] Message persistence
 - [x] Conversation history and context retention
-- [x] Customer-visible message filtering
+- [x] Customer visible message filtering
 - [x] Conversation timestamp updates
 - [ ] JWT authentication and customer registration
-- [ ] API-level integration tests
+- [ ] API level integration tests
 - [ ] Improved error handling and reliability
-- [ ] Knowledge base and Retrieval-Augmented Generation (RAG)
+- [ ] Knowledge base and Retrieval Augmented Generation (RAG)
 - [ ] AI response evaluation and security testing
 - [ ] Production deployment and monitoring
 
