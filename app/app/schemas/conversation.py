@@ -24,3 +24,7 @@ class ConversationHistoryResponse(BaseModel):
 
 class CreateConversationRequest(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
+
+
+class ConversationUpdate(BaseModel):
+    updated_at: datetime

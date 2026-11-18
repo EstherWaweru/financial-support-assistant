@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
@@ -83,6 +84,13 @@ def create_conversation(
         conversation_id=conversation.id,
     )
     repositories.message.create(db=db, obj_in=message_schema)
+    # update conversation update
+    conversation_schema = schemas.ConversationUpdate(
+        updated_at=datetime.now(timezone.utc)
+    )
+    repositories.conversation.update(
+        db=db, db_obj=conversation, obj_in=conversation_schema
+    )
     return schemas.ChatResponse(
         response=assistant_response["response"], conversation_id=conversation.id
     )
@@ -167,6 +175,13 @@ def create_message(
         role="Assistant", content=response["response"], conversation_id=conversation.id
     )
     repositories.message.create(db=db, obj_in=message_schema)
+    # update conversation update
+    conversation_schema = schemas.ConversationUpdate(
+        updated_at=datetime.now(timezone.utc)
+    )
+    repositories.conversation.update(
+        db=db, db_obj=conversation, obj_in=conversation_schema
+    )
     # Return the response
     return schemas.ChatResponse(
         conversation_id=conversation_id,

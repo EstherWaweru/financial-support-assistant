@@ -4,5 +4,6 @@ from .conversation import (
     ConversationResponse,
     ConversationHistoryResponse,
     CreateConversationRequest,
+    ConversationUpdate,
 )
 from .message import MessageCreate, CreateMessageRequest, MessageResponse

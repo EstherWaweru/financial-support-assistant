@@ -22,3 +22,7 @@ class MessageResponse(BaseModel):
 
 class CreateMessageRequest(BaseModel):
     message: str = Field(min_length=1, max_length=2000)
+
+
+class MessageUpdate(BaseModel):
+    pass
