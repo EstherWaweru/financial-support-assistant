@@ -17,7 +17,7 @@ model = settings.openrouter_model
 openrouter_url = settings.openrouter_url
 
 
-def generate_response(message: str, customer_id: str) -> str:
+def generate_response(messages: list[dict], customer_id: str) -> str:
     if not api_key or not model:
         raise ValueError("OpenRouter configuration is missing")
 
@@ -25,7 +25,7 @@ def generate_response(message: str, customer_id: str) -> str:
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
-    messages = [
+    conversation_messages = [
         {
             "role": "system",
             "content": (
@@ -39,10 +39,7 @@ def generate_response(message: str, customer_id: str) -> str:
                 "Limit response to 50 words."
             ),
         },
-        {
-            "role": "user",
-            "content": message,
-        },
+        *messages,
     ]
 
     for round_number in range(MAX_TOOL_ROUNDS + 1):
@@ -52,7 +49,7 @@ def generate_response(message: str, customer_id: str) -> str:
             "messages": messages,
             "temperature": 0.3,
             "tools": TRANSACTION_TOOLS,
-            "tools_choice": "auto",
+            "tool_choice": "auto",
         }
 
         response = requests.post(

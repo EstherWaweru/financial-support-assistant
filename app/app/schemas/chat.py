@@ -1,3 +1,6 @@
+from typing import Optional
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 
@@ -7,7 +10,9 @@ class ChatRequest(BaseModel):
         max_length=2000,
         description="Customer's message",
     )
+    conversation_id: Optional[UUID] = None
 
 
 class ChatResponse(BaseModel):
     response: str
+    conversation_id: UUID
