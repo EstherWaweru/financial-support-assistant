@@ -172,3 +172,51 @@ def create_message(
         conversation_id=conversation_id,
         response=response["response"],
     )
+
+
+@router.get(
+    "/{conversation_id}",
+    response_model=schemas.ConversationHistoryResponse,
+)
+def get_conversation_history(
+    conversation_id: UUID, db: Session = Depends(deps.get_db)
+) -> Any:
+    # TODO: Replace this with customer retried from auth
+    customer_id = "customer_001"
+    # Retrieve conversation and verify ownership
+    conversation = repositories.conversation.get_by(
+        db=db,
+        id=conversation_id,
+        customer_id=customer_id,
+    )
+    if not conversation:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Conversation with id {conversation_id} for customer {customer_id} not found",
+        )
+    messages = repositories.message.get_multi(
+        db=db,
+        conversation_id=conversation_id,
+    )
+
+    # TODO: Move formatting tp formatter utils
+
+    visible_messages = [
+        schemas.MessageResponse(
+            id=message.id,
+            role=message.role,
+            content=message.content,
+            created_at=message.created_at,
+        )
+        for message in messages
+        if message.role in {"User", "Assistant"} and message.content is not None
+    ]
+    return schemas.ConversationHistoryResponse(
+        conversation=schemas.ConversationResponse(
+            id=conversation.id,
+            customer_id=conversation.customer_id,
+            created_at=conversation.created_at,
+            updated_at=conversation.updated_at,
+        ),
+        messages=visible_messages,
+    )

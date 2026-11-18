@@ -5,4 +5,4 @@ from .conversation import (
     ConversationHistoryResponse,
     CreateConversationRequest,
 )
-from .message import MessageCreate, CreateMessageRequest
+from .message import MessageCreate, CreateMessageRequest, MessageResponse
