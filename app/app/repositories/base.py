@@ -144,3 +144,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType]):
         db.delete(obj)
         db.flush()
         return obj
+
+    def apply_filter(self, base_query: Query, filter: Filter) -> Query:
+        for key, item in filter.filter_list.items():
+            for command, value in item.items():
+                if hasattr(self.model, key) and command is not None:
+                    column = getattr(self.model, key)
+                    base_query = command.apply_command(
+                        value=value, column=column, query=base_query
+                    )
+
+        return base_query

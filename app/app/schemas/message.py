@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field
 
 class MessageCreate(BaseModel):
     role: str
-    content: str
+    content: Optional[str] = None
     conversation_id: UUID
     tool_calls: Optional[list[dict]] = None
     tool_call_id: Optional[str] = None

@@ -41,12 +41,13 @@ def generate_response(messages: list[dict], customer_id: str) -> str:
         },
         *messages,
     ]
+    tool_messages = []
 
     for round_number in range(MAX_TOOL_ROUNDS + 1):
 
         payload = {
             "model": model,
-            "messages": messages,
+            "messages": conversation_messages,
             "temperature": 0.3,
             "tools": TRANSACTION_TOOLS,
             "tool_choice": "auto",
@@ -69,17 +70,29 @@ def generate_response(messages: list[dict], customer_id: str) -> str:
 
         # No tool requested: return the normal response.
         if not tool_calls:
-            return assistant_message.get("content") or ""
+
+            return {
+                "response": assistant_message.get("content") or "",
+                "tool_messages": tool_messages,
+            }
 
         # Prevent additional tool execution after the limit.
         if round_number == MAX_TOOL_ROUNDS:
-            return (
-                "I couldn't complete your request. "
-                "Please try again or contact support."
-            )
+            return {
+                "response": "I couldn't complete your request. Please try again or contact support.",
+                "tool_messages": tool_messages,
+            }
 
         # Add the assistant's original tool request to the conversation.
-        messages.append(assistant_message)
+
+        assistant_tool_message = {
+            "role": "assistant",
+            "content": assistant_message.get("content"),
+            "tool_calls": tool_calls,
+        }
+
+        conversation_messages.append(assistant_message)
+        tool_messages.append(assistant_tool_message)
 
         # Execute each requested tool.
         for tool_call in tool_calls:
@@ -87,12 +100,16 @@ def generate_response(messages: list[dict], customer_id: str) -> str:
                 tool_call=tool_call,
                 customer_id=customer_id,
             )
+            tool_response = {
+                "role": "tool",
+                "tool_call_id": tool_call["id"],
+                "content": json.dumps(tool_result),
+            }
 
-            messages.append(
-                {
-                    "role": "tool",
-                    "tool_call_id": tool_call["id"],
-                    "content": json.dumps(tool_result),
-                }
-            )
-    return "Unable to complete your request"
+            conversation_messages.append(tool_response)
+            tool_messages.append(tool_response)
+
+    return {
+        "response": "Unable to complete your request",
+        "tool_messages": tool_messages,
+    }
