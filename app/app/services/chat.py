@@ -17,7 +17,12 @@ model = settings.openrouter_model
 openrouter_url = settings.openrouter_url
 
 
-def generate_response(messages: list[dict], customer_id: str) -> str:
+def llm_chat(messages: list[dict], external_customer_id: str) -> dict:
+    """
+    :param messages:
+    :param external_customer_id: This is for development only. In production use the financial provider customer id
+    :return:
+    """
     if not api_key or not model:
         raise ValueError("OpenRouter configuration is missing")
 
@@ -102,7 +107,7 @@ def generate_response(messages: list[dict], customer_id: str) -> str:
         for tool_call in tool_calls:
             tool_result = execute_tool_call(
                 tool_call=tool_call,
-                customer_id=customer_id,
+                external_customer_id=external_customer_id,
             )
             tool_response = {
                 "role": "tool",

@@ -7,12 +7,12 @@ from app.schemas.message import MessageResponse
 
 
 class ConversationCreate(BaseModel):
-    customer_id: str
+    customer_id: UUID
 
 
 class ConversationResponse(BaseModel):
     id: UUID
-    customer_id: str
+    customer_id: UUID
     created_at: datetime
     updated_at: datetime
 

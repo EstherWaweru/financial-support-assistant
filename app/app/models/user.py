@@ -42,6 +42,12 @@ class User(Base):
         nullable=False,
     )
 
+    external_customer_id: Mapped[str | None] = mapped_column(
+        String(100),
+        unique=True,
+        nullable=True,
+    )  # This is for development purpose only so that we could be able to link customer to mocked transaction data.
+
     conversations: Mapped[list["Conversation"]] = relationship(
         back_populates="customer",
         cascade="all, delete-orphan",

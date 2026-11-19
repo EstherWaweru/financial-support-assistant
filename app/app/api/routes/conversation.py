@@ -45,8 +45,8 @@ def create_conversation(
                 "content": request.message,
             }
         ]
-        assistant_response = services.generate_response(
-            messages=messages, customer_id="customer_001"
+        assistant_response = services.llm_chat(
+            messages=messages, external_customer_id=current_user.external_customer_id
         )
 
     except Timeout:
@@ -140,9 +140,9 @@ def create_message(
         }
     )
     try:
-        response = services.generate_response(
+        response = services.llm_chat(
             messages=messages,
-            customer_id=customer_id,
+            external_customer_id=current_user.external_customer_id,
         )
     except Timeout:
         raise HTTPException(

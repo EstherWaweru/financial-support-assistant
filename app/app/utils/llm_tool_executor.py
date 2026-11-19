@@ -12,8 +12,14 @@ from app.schemas.transaction import TransactionLookupArgs
 
 def execute_tool_call(
     tool_call: dict,
-    customer_id: str,
+    external_customer_id: str,
 ) -> dict:
+    """
+
+    :param tool_call:
+    :param external_customer_id: Note in production use the financial provider customer id equivalent
+    :return:
+    """
     function = tool_call["function"]
     function_name = function["name"]
 
@@ -25,7 +31,7 @@ def execute_tool_call(
 
             transaction = get_transaction_status(
                 transaction_id=validated_args.transaction_id,
-                customer_id=customer_id,
+                customer_id=external_customer_id,
             )
 
             if transaction is None:
