@@ -22,7 +22,7 @@ TRANSACTIONS = {
 
 def get_transaction_status(
     transaction_id: str,
-    customer_id: str,
+    external_customer_id: str | None,
 ) -> dict | None:
 
     transaction = TRANSACTIONS.get(transaction_id)
@@ -30,7 +30,7 @@ def get_transaction_status(
     if not transaction:
         return None
 
-    if transaction["customer_id"] != customer_id:
+    if transaction["customer_id"] != external_customer_id:
         return None
 
     return {

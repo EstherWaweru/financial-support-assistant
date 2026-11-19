@@ -1,9 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 from app.schemas.message import MessageResponse
+
+from app.models import ConversationStatus
 
 
 class ConversationCreate(BaseModel):
@@ -15,6 +17,7 @@ class ConversationResponse(BaseModel):
     customer_id: UUID
     created_at: datetime
     updated_at: datetime
+    status: ConversationStatus
 
 
 class ConversationHistoryResponse(BaseModel):
@@ -27,4 +30,5 @@ class CreateConversationRequest(BaseModel):
 
 
 class ConversationUpdate(BaseModel):
-    updated_at: datetime
+    updated_at: datetime = datetime.now(timezone.utc)
+    status: ConversationStatus = ConversationStatus.ACTIVE.value

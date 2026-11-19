@@ -181,25 +181,17 @@ Customer identity must be obtained from authenticated backend context, never tru
 
 ## Development Roadmap
 
-- [x] OpenRouter REST API integration
-- [x] FastAPI application setup
-- [x] Transaction lookup backend function
-- [x] LLM function/tool calling
-- [x] Tool argument validation and execution
-- [x] PostgreSQL integration
-- [x] SQLAlchemy models
-- [x] Alembic database migrations
-- [x] Conversation creation and retrieval
-- [x] Message persistence
-- [x] Conversation history and context retention
-- [x] Customer visible message filtering
-- [x] Conversation timestamp updates
-- [ ] JWT authentication and customer registration
-- [ ] API level integration tests
-- [ ] Improved error handling and reliability
+- [x] LLM Integration
+- [x] Backend Setup
+- [x] Tool Calling and function integration
+- [x] Authentication and authorization
 - [ ] Knowledge base and Retrieval Augmented Generation (RAG)
 - [ ] AI response evaluation and security testing
 - [ ] Production deployment and monitoring
+- [ ] Support ticket intelligence
+- [ ] Agent workflows and orchestration
+- [ ] Testing, Evaluation, Security
+- [ ] Async Processing and Observability
 
 ## Running Tests
 
@@ -216,6 +208,8 @@ poetry run pytest
 This project is intended to demonstrate practical AI integration engineering, including:
 
 - Integrating LLMs into backend applications.
+- Knowledge Base and RAG
+- Agent Workflow and Orchestration
 - Designing reliable tool calling workflows.
 - Building secure financial API integrations.
 - Managing conversation state and context.

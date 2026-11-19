@@ -17,7 +17,7 @@ model = settings.openrouter_model
 openrouter_url = settings.openrouter_url
 
 
-def llm_chat(messages: list[dict], external_customer_id: str) -> dict:
+def llm_chat(messages: list[dict], external_customer_id: str | None) -> dict:
     """
     :param messages:
     :param external_customer_id: This is for development only. In production use the financial provider customer id

@@ -2,11 +2,18 @@ import uuid
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base
+
+from enum import Enum
+
+
+class ConversationStatus(str, Enum):
+    ACTIVE = "active"
+    CLOSED = "closed"
 
 
 class Conversation(Base):
@@ -36,6 +43,12 @@ class Conversation(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
+    )
+    status: Mapped[str] = mapped_column(
+        String(20),
+        nullable=False,
+        default=ConversationStatus.ACTIVE.value,
+        server_default=ConversationStatus.ACTIVE.value,
     )
 
     messages: Mapped[list["Message"]] = relationship(

@@ -13,7 +13,7 @@ from app.api import deps
 from app import services
 from app.utils.formatter import format_messages
 
-from app.models import User
+from app.models import User, ConversationStatus
 
 router = APIRouter()
 
@@ -117,6 +117,12 @@ def create_message(
         raise HTTPException(
             status_code=404,
             detail=f"Conversation with id {conversation_id} for customer {customer_id} not found",
+        )
+
+    if conversation.status == ConversationStatus.CLOSED.value:
+        raise HTTPException(
+            status_code=409,
+            detail="This conversation is closed and cannot receive new messages.",
         )
     #  Retrieve existing conversation history
     previous_messages = repositories.message.get_multi(
@@ -239,3 +245,30 @@ def get_conversation_history(
         ),
         messages=visible_messages,
     )
+
+
+@router.patch("/{conversation_id}/archive", response_model=schemas.ConversationResponse)
+def archive_conversation(
+    conversation_id: UUID,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+):
+    conversation = repositories.conversation.get_by(
+        db=db,
+        id=conversation_id,
+        customer_id=current_user.id,
+    )
+
+    if conversation is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Conversation not found.",
+        )
+    if conversation.status == ConversationStatus.CLOSED.value:
+        return conversation
+    update_schema = schemas.ConversationUpdate(status=ConversationStatus.CLOSED.value)
+    conversation = repositories.conversation.update(
+        db=db, db_obj=conversation, obj_in=update_schema
+    )
+
+    return conversation

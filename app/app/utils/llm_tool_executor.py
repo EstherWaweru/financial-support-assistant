@@ -12,7 +12,7 @@ from app.schemas.transaction import TransactionLookupArgs
 
 def execute_tool_call(
     tool_call: dict,
-    external_customer_id: str,
+    external_customer_id: str | None,
 ) -> dict:
     """
 
@@ -29,9 +29,15 @@ def execute_tool_call(
         if function_name == "get_transaction_status":
             validated_args = TransactionLookupArgs.model_validate(arguments)
 
+            if not external_customer_id:
+                return {
+                    "status": "error",
+                    "message": "Customer account is not linked to a financial account.",
+                }
+
             transaction = get_transaction_status(
                 transaction_id=validated_args.transaction_id,
-                customer_id=external_customer_id,
+                external_customer_id=external_customer_id,
             )
 
             if transaction is None:
