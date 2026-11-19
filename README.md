@@ -74,25 +74,8 @@ poetry install
 
 ### 3. Configure environment variables
 
-Create a `.env` file in the project root.
+Create a `.env` file in the project root use the .env.example as your guideline.
 
-```env
-OPENROUTER_API_KEY=your_openrouter_api_key
-OPENROUTER_MODEL=your_model_id
-
-POSTGRES_PASSWORD=your_database_password
-DATABASE_URL=postgresql+psycopg://app_user:your_database_password@db:5432/financial_support
-
-JWT_SECRET_KEY=your_generated_secret
-JWT_ALGORITHM=HS256
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
-```
-
-Generate a secure JWT secret using:
-
-```bash
-openssl rand -hex 32
-```
 
 ### 4. Start the application
 
@@ -110,6 +93,10 @@ http://localhost:8000
 
 ```bash
 docker compose exec api alembic upgrade head
+```
+To create new migrations use
+```bash
+docker compose exec api alembic revision --autogenerate -m ""
 ```
 
 ### 6. Access API documentation

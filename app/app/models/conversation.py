@@ -2,7 +2,7 @@ import uuid
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, String
+from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -18,8 +18,9 @@ class Conversation(Base):
         default=uuid.uuid4,
     )
 
-    customer_id: Mapped[str] = mapped_column(
-        String(100),
+    customer_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -42,3 +43,5 @@ class Conversation(Base):
         cascade="all, delete-orphan",
         order_by="Message.created_at",
     )
+
+    customer: Mapped["User"] = relationship(back_populates="conversations")
