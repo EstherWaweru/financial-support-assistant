@@ -72,6 +72,13 @@ cd financial-support-assistant
 poetry install
 ```
 
+To install new dependencies use
+
+```bash
+poetry add <package_name>
+```
+
+
 ### 3. Configure environment variables
 
 Create a `.env` file in the project root use the .env.example as your guideline.

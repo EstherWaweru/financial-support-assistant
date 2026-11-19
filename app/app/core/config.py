@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     openrouter_url: str
     postgres_password: str
     database_url: str
+    jwt_secret_key: str
+    jwt_algorithm: str
+    jwt_access_token_expire_minutes: str
 
     model_config = SettingsConfigDict(env_file=".env")
 
