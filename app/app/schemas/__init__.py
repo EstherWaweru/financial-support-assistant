@@ -7,3 +7,5 @@ from .conversation import (
     ConversationUpdate,
 )
 from .message import MessageCreate, CreateMessageRequest, MessageResponse
+from .user import UserRegisterRequest, UserRegisterResponse, UserCreate
+from .auth import UserLoginRequest, TokenResponse

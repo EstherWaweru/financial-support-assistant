@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from app.db.session import SessionLocal
 
-from app.app import repositories
+from app import repositories
 from app.core.security import decode_access_token
 from app.models import User
 
@@ -53,14 +53,3 @@ def get_current_user(
         raise credentials_exception
 
     return user
-
-
-# TODO: Move this to somewhere else
-class OrderDirection(enum.Enum):
-    DESC = "desc"
-    ASC = "asc"
-
-
-class Order(SimpleNamespace):
-    attribute: str
-    order_direction: OrderDirection

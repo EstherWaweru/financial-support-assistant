@@ -1,6 +1,8 @@
+import enum
+from types import SimpleNamespace
+
 from sqlalchemy.sql.elements import or_, and_
 from datetime import timezone
-from app.api.deps import OrderDirection, Order
 from app.repositories.filter import Filter
 from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, Tuple
 from fastapi.encoders import jsonable_encoder
@@ -13,6 +15,16 @@ from datetime import datetime
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
+
+
+class OrderDirection(enum.Enum):
+    DESC = "desc"
+    ASC = "asc"
+
+
+class Order(SimpleNamespace):
+    attribute: str
+    order_direction: OrderDirection
 
 
 class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
@@ -70,7 +82,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return query.all()
 
     def get_or_create(
-        self, db: Session, *, obj_in: CreateSchemaType, creator: Optional[str] = None
+        self, db: Session, *, obj_in: CreateSchemaType
     ) -> Tuple[ModelType, bool]:
         obj_in_data = jsonable_encoder(obj_in.dict(exclude_unset=True))
         db_obj = db.query(self.model).filter_by(**obj_in_data).first()
