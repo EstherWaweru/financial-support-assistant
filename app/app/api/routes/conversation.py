@@ -13,17 +13,20 @@ from app.api import deps
 from app import services
 from app.utils.formatter import format_messages
 
+from app.models import User
+
 router = APIRouter()
 
 
 @router.post("/create", response_model=schemas.ChatResponse)
 def create_conversation(
-    request: schemas.CreateConversationRequest, db: Session = Depends(deps.get_db)
+    request: schemas.CreateConversationRequest,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
 ) -> Any:
-    # TODO: Get the customer id by auth
-    customer_id = "customer_001"
+    customer_id = current_user.id
     conversation_schema = schemas.ConversationCreate(customer_id=customer_id)
-    # 1. Create conversation in db
+    # Create conversation in db
     conversation = repositories.conversation.create(
         db=db,
         obj_in=conversation_schema,
@@ -101,9 +104,9 @@ def create_message(
     conversation_id: UUID,
     request: schemas.CreateMessageRequest,
     db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
 ) -> Any:
-    # TODO: Replace this with customer retried from auth
-    customer_id = "customer_001"
+    customer_id = current_user.id
     # Retrieve conversation and verify ownership
     conversation = repositories.conversation.get_by(
         db=db,
@@ -194,10 +197,11 @@ def create_message(
     response_model=schemas.ConversationHistoryResponse,
 )
 def get_conversation_history(
-    conversation_id: UUID, db: Session = Depends(deps.get_db)
+    conversation_id: UUID,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
 ) -> Any:
-    # TODO: Replace this with customer retried from auth
-    customer_id = "customer_001"
+    customer_id = current_user.id
     # Retrieve conversation and verify ownership
     conversation = repositories.conversation.get_by(
         db=db,
