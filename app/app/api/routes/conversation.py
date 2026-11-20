@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, List
 from uuid import UUID
 
 from fastapi import Depends, APIRouter, HTTPException
@@ -260,10 +260,7 @@ def archive_conversation(
     )
 
     if conversation is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Conversation not found.",
-        )
+        raise HTTPException(status_code=404, detail="Conversation not found.")
     if conversation.status == ConversationStatus.CLOSED.value:
         return conversation
     update_schema = schemas.ConversationUpdate(status=ConversationStatus.CLOSED.value)
@@ -272,3 +269,39 @@ def archive_conversation(
     )
 
     return conversation
+
+
+# TODO; Add routes for update conversation like title, delete conversation,get converation,ger conversationa dn filter by status, unarchive conversation, maybe look at pagination
+@router.patch(
+    "/{conversation_id}/unarchive", response_model=schemas.ConversationResponse
+)
+def unarchive_conversation(
+    conversation_id: UUID,
+    current_user: User = Depends(deps.get_current_user),
+    db: Session = Depends(deps.get_db),
+) -> Any:
+    conversation = repositories.conversation.get_by(
+        db=db, id=conversation_id, customer_id=current_user.id
+    )
+    if not conversation:
+        raise HTTPException(status=404, detail="Conversation is not found")
+    if conversation.status == ConversationStatus.ACTIVE.value:
+        return conversation
+    update_schema = schemas.ConversationUpdate(status=ConversationStatus.ACTIVE.value)
+    conversation = repositories.conversation.update(
+        db=db, db_obj=conversation, obj_in=update_schema
+    )
+    return conversation
+
+
+@router.get("", response_model=List[schemas.ConversationResponse])
+def get_conversations(
+    status: ConversationStatus | None = None,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    if status is None:
+        return repositories.conversation.get_multi(db=db, customer_id=current_user.id)
+    return repositories.conversation.get_multi(
+        db=db, customer_id=current_user.id, status=status.value
+    )

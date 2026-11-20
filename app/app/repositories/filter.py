@@ -160,16 +160,3 @@ class Filter:
             self.filter_list[key][command] = [value]
         else:
             self.filter_list[key][command] = value
-
-
-description = f"""
-    Endpoint supports generic ransacker style queries or direct attribute queries.
-
-    https://github.com/activerecord-hackery/ransack#search-matchers
-
-    Supported ransacker commands right now: {", ".join(Filter.commands.keys())}.
-
-    Examples 1: endpoint/?q[some_attribute_gt]=20000
-    Examples 3: endpoint/?q[some_attribute_in][]=a&q[some_attribute_in][]=b
-    Examples 2: endpoint/?some_attribute_id=1
-"""
