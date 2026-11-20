@@ -271,7 +271,7 @@ def archive_conversation(
     return conversation
 
 
-# TODO; Add routes for update conversation like title, delete conversation,get converation,ger conversationa dn filter by status, unarchive conversation, maybe look at pagination
+# TODO: Add pagination
 @router.patch(
     "/{conversation_id}/unarchive", response_model=schemas.ConversationResponse
 )
@@ -284,7 +284,7 @@ def unarchive_conversation(
         db=db, id=conversation_id, customer_id=current_user.id
     )
     if not conversation:
-        raise HTTPException(status=404, detail="Conversation is not found")
+        raise HTTPException(status_code=404, detail="Conversation is not found")
     if conversation.status == ConversationStatus.ACTIVE.value:
         return conversation
     update_schema = schemas.ConversationUpdate(status=ConversationStatus.ACTIVE.value)
@@ -305,3 +305,37 @@ def get_conversations(
     return repositories.conversation.get_multi(
         db=db, customer_id=current_user.id, status=status.value
     )
+
+
+# TODO: Uncomment this when title is added to conversation
+# @router.patch("{conversation_id}", response_model=schemas.ConversationResponse)
+# def update_conversation(
+#     conversation_id: UUID,
+#     update_data: schemas.UpdateConversationRequest,
+#     db: Session = Depends(deps.get_db),
+#     current_user: User = Depends(deps.get_current_user),
+# ) -> Any:
+#     conversation = repositories.conversation.get_by(
+#         id=conversation_id, customer_id=current_user.id
+#     )
+#     if not conversation:
+#         raise HTTPException(status_code=404, detail="Conversation is not found")
+#     conversation = repositories.conversation.update(
+#         db=db, db_obj=conversation, obj_in=update_data
+#     )
+#     return conversation
+
+
+@router.delete("{conversation_id}")
+def delete_conversation(
+    conversation_id: UUID,
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    conversation = repositories.conversation.get_by(
+        db=db, id=conversation_id, customer_id=current_user.id
+    )
+    if not conversation:
+        raise HTTPException(status_code=404, detail="Conversation is not found")
+    repositories.conversation.remove(db=db, id=conversation.id)
+    return {"message": "Conversation deleted successfuly"}

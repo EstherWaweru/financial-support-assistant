@@ -118,11 +118,16 @@ http://localhost:8000/docs
 
 ### Conversations
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/v1/conversations/` | Create a new conversation |
-| GET | `/api/v1/conversations/{conversation_id}` | Retrieve conversation history |
-| POST | `/api/v1/conversations/{conversation_id}/messages` | Send a message to an existing conversation |
+| Method | Endpoint                                            | Description                                                     |
+|--------|-----------------------------------------------------|-----------------------------------------------------------------|
+| POST   | `/api/v1/conversations/`                            | Create a new conversation                                       |
+| GET    | `/api/v1/conversations/{conversation_id}`           | Retrieve conversation history                                   |
+| POST   | `/api/v1/conversations/{conversation_id}/messages`  | Send a message to an existing conversation                      |
+| PATCH  | `/api/v1/conversations/{conversation_id}/archive`   | Archive a conversation                                          |
+| PATCH  | `/api/v1/conversations/{conversation_id}/unarchive` | Unarchive a conversation                                        |
+| GET    | `/api/v1/conversations`                             | Retrieve a customer conversations and can be filtered by status |
+| DELETE | `/api/v1/conversations/{conversation_id}`           | Delete a conversation                                           |
+
 
 ### Example: Create a conversation
 

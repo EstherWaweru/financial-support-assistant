@@ -32,3 +32,7 @@ class CreateConversationRequest(BaseModel):
 class ConversationUpdate(BaseModel):
     updated_at: datetime = datetime.now(timezone.utc)
     status: ConversationStatus = ConversationStatus.ACTIVE.value
+
+
+class UpdateConversationRequest(BaseModel):
+    title: str = Field(min_length=1, max_length=2000)

@@ -5,6 +5,7 @@ from .conversation import (
     ConversationHistoryResponse,
     CreateConversationRequest,
     ConversationUpdate,
+    UpdateConversationRequest,
 )
 from .message import MessageCreate, CreateMessageRequest, MessageResponse
 from .user import UserRegisterRequest, UserRegisterResponse, UserCreate
